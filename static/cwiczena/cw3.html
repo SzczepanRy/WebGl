@@ -36,7 +36,8 @@
 
 <body>
     <div class="form">
-        <input max="100" min="1" type="range" id="fov">
+        <button class="add">add</button>
+        <button class="del">del</button>
     </div>
     <div id="root">
 
@@ -78,6 +79,10 @@
 
 
 
+            const color3 = new THREE.Color("rgb(255, 0, 0)");
+            const color1 = new THREE.Color("rgb(255, 255, 0)");
+            const color2 = new THREE.Color("rgb(255, 0, 255)");
+            const color4 = new THREE.Color("rgb(0, 255, 0)");
 
             camera.position.set(100, 100, 100)
 
@@ -87,23 +92,45 @@
 
 
 
-            const geometry = new THREE.BoxGeometry(100, 100, 100);
+            const geometry = new THREE.BoxGeometry(10, 10, 10);
+
+            // for (var i = 0; i < geometry.faces.length; i++) {
+            //    geometry.faces[i].color.setHex(Math.random() * 0xffffff);
+            //}
+            let colors = [color1, color2, color3, color4]
+            console.log(geometry)
+
+
             const material = new THREE.MeshBasicMaterial({
                 color: 0x8888ff,
                 side: THREE.DoubleSide,
-                wireframe: false,
-                transparent: true,
-                opacity: 0.5
+                //wireframe: true,
+                vertexColors: true,
+                transparent: false,
+                opacity: 1
             });
-            const cube = new THREE.Mesh(geometry, material);
-            scene.add(cube);
+            let cube = new THREE.Mesh(geometry, material);
+
+            console.log(cube.position)
 
 
-
-            input.addEventListener("input", (e) => {
-                camera.fov = parseInt(e.target.value);
-                camera.updateProjectionMatrix();
+            const add = document.querySelector(".add")
+            const del = document.querySelector(".del")
+            add.addEventListener("click", () => {
+                let cube = new THREE.Mesh(geometry, material);
+                cube.position.set(Math.floor(Math.random() * 100), Math.floor(Math.random() * 100), Math.floor(Math.random() * 100));
+                scene.add(cube);
+                console.log(scene)
             })
+            del.addEventListener("click", () => {
+                scene.children.pop()
+            })
+
+
+
+            camera.fov = 100;
+            camera.updateProjectionMatrix();
+
 
 
             // kluczowy element - animacja
@@ -115,14 +142,14 @@
                 //np zmieniająca się wartość rotacji obiektu
 
                 // mesh.rotation.y += 0.01;
-                cube.rotation.y += 0.01
+                //cube.rotation.y += 0.01
                 //wykonywanie funkcji bez końca, ok 60 fps jeśli pozwala na to wydajność maszyny
 
                 requestAnimationFrame(render);
 
                 // potwierdzenie w konsoli, że render się wykonuje
 
-                console.log("render leci")
+                //console.log("render leci")
 
                 //ciągłe renderowanie / wyświetlanie widoku sceny naszą kamerą
 

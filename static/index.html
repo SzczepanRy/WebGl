@@ -12,19 +12,35 @@
 <body>
     <div class="form">
 
-        <ul>
-            <li><a href="http://localhost:4000/cw/cw1">cw1</a></li>
-            <li><a href="http://localhost:4000/cw/cw2">cw2</a></li>
-            <li><a href="http://localhost:4000/cw/cw3">cw3</a></li>
-            <li><a href="http://localhost:4000/cw/cw4">cw4</a></li>
-            <li><a href="http://localhost:4000/cw/cw5">cw5</a></li>
+        <ul class="ul">
+
         </ul>
     </div>
     <script>
+        const ul = document.querySelector(".ul")
 
 
+        window.addEventListener("load", async (e) => {
 
+            const res = await fetch("http://localhost:3000/num", {
+                method: "get",
+                headers: {
+                    "content-type": "application/json"
+                }
+            })
+            let i = await res.json()
+            console.log(i.i)
 
+            for (let y = 1; y <= Number(i.i); y++) {
+                let child = document.createElement("li")
+                let a = document.createElement("a")
+                a.innerText = `cw${y}`
+                a.href = `http://localhost:3000/cw/cw${y}`
+                child.appendChild(a)
+                ul.appendChild(child)
+            }
+
+        })
     </script>
 </body>
 

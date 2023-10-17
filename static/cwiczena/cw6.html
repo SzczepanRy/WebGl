@@ -35,9 +35,7 @@
 </head>
 
 <body>
-    <div class="form">
-        <input max="100" min="1" type="range" id="fov">
-    </div>
+
     <div id="root">
 
     </div>
@@ -87,23 +85,35 @@
 
 
 
-            const geometry = new THREE.BoxGeometry(100, 100, 100);
+            const geometry = new THREE.BoxGeometry(40, 40, 40);
             const material = new THREE.MeshBasicMaterial({
                 color: 0x8888ff,
                 side: THREE.DoubleSide,
                 wireframe: false,
                 transparent: true,
-                opacity: 0.5
+                opacity: .3
             });
-            const cube = new THREE.Mesh(geometry, material);
-            scene.add(cube);
+            let x = -105
+
+            for (let i = 0; i < 5; i++) {
+                let y = -105
+                for (let z = 0; z < 5; z++) {
+                    const cube = new THREE.Mesh(geometry, material);
+                    cube.position.set(x, 0, y)
+                    scene.add(cube);
+                    y += 45
+                }
+                x += 45
+
+            }
 
 
 
-            input.addEventListener("input", (e) => {
-                camera.fov = parseInt(e.target.value);
-                camera.updateProjectionMatrix();
-            })
+
+
+            camera.fov = 100;
+            camera.updateProjectionMatrix();
+
 
 
             // kluczowy element - animacja
@@ -115,14 +125,14 @@
                 //np zmieniająca się wartość rotacji obiektu
 
                 // mesh.rotation.y += 0.01;
-                cube.rotation.y += 0.01
+
                 //wykonywanie funkcji bez końca, ok 60 fps jeśli pozwala na to wydajność maszyny
 
                 requestAnimationFrame(render);
 
                 // potwierdzenie w konsoli, że render się wykonuje
 
-                console.log("render leci")
+
 
                 //ciągłe renderowanie / wyświetlanie widoku sceny naszą kamerą
 

@@ -12,16 +12,13 @@
             margin: 0;
         }
 
-        input {
-            position: absolute;
-        }
-
         .form {
             position: absolute;
             width: 200px;
             padding: 50px;
             background-color: rgba(233, 233, 233, .4);
             display: flex;
+            flex-direction: column;
             align-items: center;
         }
 
@@ -36,7 +33,11 @@
 
 <body>
     <div class="form">
-        <input max="100" min="1" type="range" id="fov">
+        <input type="number" class="x">
+        <input type="number" class="y">
+        <input type="number" class="z">
+        <button class="gen">gen</button>
+        <div class="data"></div>
     </div>
     <div id="root">
 
@@ -85,9 +86,11 @@
 
             camera.lookAt(scene.position);
 
+            const but = document.querySelector(".gen")
+            const data = document.querySelector(".data")
 
-
-            const geometry = new THREE.BoxGeometry(100, 100, 100);
+            let geometry = new THREE.BoxGeometry(0, 0, 0);
+            geometry = new THREE.BoxGeometry(50, 50, 50);
             const material = new THREE.MeshBasicMaterial({
                 color: 0x8888ff,
                 side: THREE.DoubleSide,
@@ -100,11 +103,21 @@
 
 
 
-            input.addEventListener("input", (e) => {
-                camera.fov = parseInt(e.target.value);
-                camera.updateProjectionMatrix();
-            })
 
+
+
+            camera.fov = 100;
+            camera.updateProjectionMatrix();
+
+
+            but.addEventListener("click", (e) => {
+                let x = parseInt(document.querySelector(".x").value)
+                let y = parseInt(document.querySelector(".y").value)
+                let z = parseInt(document.querySelector(".z").value)
+                camera.position.set(x, y, z)
+                console.log(camera)
+
+            })
 
             // kluczowy element - animacja
 
@@ -115,14 +128,13 @@
                 //np zmieniająca się wartość rotacji obiektu
 
                 // mesh.rotation.y += 0.01;
-                cube.rotation.y += 0.01
+
                 //wykonywanie funkcji bez końca, ok 60 fps jeśli pozwala na to wydajność maszyny
 
                 requestAnimationFrame(render);
 
                 // potwierdzenie w konsoli, że render się wykonuje
 
-                console.log("render leci")
 
                 //ciągłe renderowanie / wyświetlanie widoku sceny naszą kamerą
 
