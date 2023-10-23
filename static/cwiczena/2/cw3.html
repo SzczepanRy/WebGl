@@ -6,7 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="../libs/three.js"></script>
+    <script src="../../libs/three.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -33,18 +34,13 @@
 
 <body>
     <div class="form">
-        <input max="200" min="50" type="range" id="1" class="fov">
-        <label for="1">fov</label>
-        <input type="range" max="200" min="0" id="2" class="ypos">
-        <label for="2">y pos </label>
-        <input max="10" min="2" type="range" id="3" step="2" class="count">
-        <label for="3">count</label>
-
+        <button class="but">start/stop</button>
     </div>
     <div id="root">
 
     </div>
     <script>
+
         window.addEventListener("load", function () {
             //       const input = document.querySelector("#fov")
             const scene = new THREE.Scene();
@@ -81,60 +77,43 @@
 
 
             const ypos = document.querySelector(".ypos")
-            ypos.addEventListener("input", (e) => {
-
-                camera.position.set(200, parseInt(e.currentTarget.value), 200)
-
-                // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
-
-                camera.lookAt(scene.position);
-            })
 
 
 
+            camera.position.set(200, 200, 200)
+
+            // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
+
+            camera.lookAt(scene.position);
 
 
-            const geometry = new THREE.BoxGeometry(20, 20, 20);
+
+
+
+
+            const geometry = new THREE.BoxGeometry(256, 256, 256);
             const material = new THREE.MeshBasicMaterial({
-                color: 0x8888ff,
-                side: THREE.DoubleSide,
-                wireframe: false,
-                transparent: true,
-                opacity: .3
-            });
 
-
-
-            const count = document.querySelector(".count")
-            count.addEventListener("input", (e) => {
-
-                scene.remove.apply(scene, scene.children)
-                let c = parseInt(e.currentTarget.value)
-
-                let x = (-45 * (c / 2)) + (5 * (c - 1))
-                // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
-
-                for (let i = 0; i < c; i++) {
-                    let y = (-45 * (c / 2)) + (5 * (c - 1))
-                    for (let z = 0; z < c; z++) {
-                        let r = (-45 * (c / 2)) + (5 * (c - 1))
-                        for (let t = 0; t < c; t++) {
-                            const cube = new THREE.Mesh(geometry, material);
-                            cube.position.x = x;
-                            cube.position.y = y;
-                            cube.position.z = r;
-                            // cube.position.set(x, r, y)
-                            scene.add(cube);
-                            r += 45
-                        }
-
-                        y += 45
-                    }
-                    x += 45
-
-                }
+                side: THREE.DoubleSide, // dwustronny
+                map: new THREE.TextureLoader().load('./mats/tekstura.jpg'), // plik tekstury
+                transparent: true, // przezroczysty / nie
+                opacity: 0.8, // stopień przezroczystości
 
             })
+
+
+
+
+
+
+
+            // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
+
+            const cube = new THREE.Mesh(geometry, material);
+
+            // cube.position.set(x, r, y)
+            scene.add(cube);
+
 
 
 
@@ -142,23 +121,44 @@
 
 
             const fov = document.querySelector(".fov")
-            fov.addEventListener("input", (e) => {
-                camera.fov = parseInt(e.currentTarget.value);
-                camera.updateProjectionMatrix();
-            })
+
+            camera.fov = 100;
+            camera.updateProjectionMatrix();
+
 
 
 
 
             // kluczowy element - animacja
-
+            let moving = false; const but = document.querySelector(".but")
+            but.addEventListener("click", () => {
+                moving = !moving
+            })
+            let i = 0
             function render() {
 
 
+
+                if (moving) {
+
+                    if (i == 0) {
+                        if (camera.position.x < 10) {
+                            i++
+                        }
+
+                        camera.position.x--
+                        camera.position.z--
+                    }
+                    if (i != 0) {
+                        camera.position.x++
+                        camera.position.z++
+                    }
+
+                }
                 //w tym miejscu ustalamy wszelkie zmiany w projekcie (obrót, skalę, położenie obiektów)
                 //np zmieniająca się wartość rotacji obiektu
 
-                //cube.rotation.y += 0.01;
+                //  cube.rotation.y += 0.01;
 
                 //wykonywanie funkcji bez końca, ok 60 fps jeśli pozwala na to wydajność maszyny
 

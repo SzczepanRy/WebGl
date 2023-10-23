@@ -6,7 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="../libs/three.js"></script>
+    <script src="../../libs/three.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -18,8 +19,8 @@
             padding: 50px;
             background-color: rgba(233, 233, 233, .4);
             display: flex;
-            align-items: center;
             flex-direction: column;
+            align-items: center;
         }
 
         #root {
@@ -33,20 +34,18 @@
 
 <body>
     <div class="form">
-        <input max="200" min="50" type="range" id="1" class="fov">
-        <label for="1">fov</label>
-        <input type="range" max="200" min="0" id="2" class="ypos">
-        <label for="2">y pos </label>
-        <input max="10" min="2" type="range" id="3" step="2" class="count">
-        <label for="3">count</label>
-
+        <input type="number" class="x">
+        <input type="number" class="y">
+        <input type="number" class="z">
+        <button class="gen">gen</button>
+        <div class="data"></div>
     </div>
     <div id="root">
 
     </div>
     <script>
         window.addEventListener("load", function () {
-            //       const input = document.querySelector("#fov")
+            const input = document.querySelector("#fov")
             const scene = new THREE.Scene();
 
             const axes = new THREE.AxesHelper(1000)
@@ -80,80 +79,46 @@
             document.getElementById("root").appendChild(renderer.domElement);
 
 
-            const ypos = document.querySelector(".ypos")
-            ypos.addEventListener("input", (e) => {
-
-                camera.position.set(200, parseInt(e.currentTarget.value), 200)
-
-                // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
-
-                camera.lookAt(scene.position);
-            })
 
 
+            camera.position.set(100, 100, 100)
 
+            // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
 
+            camera.lookAt(scene.position);
 
-            const geometry = new THREE.BoxGeometry(20, 20, 20);
+            const but = document.querySelector(".gen")
+            const data = document.querySelector(".data")
+
+            let geometry = new THREE.BoxGeometry(0, 0, 0);
+            geometry = new THREE.BoxGeometry(50, 50, 50);
             const material = new THREE.MeshBasicMaterial({
                 color: 0x8888ff,
                 side: THREE.DoubleSide,
-                //wireframe: true,
+                wireframe: false,
                 transparent: true,
-                opacity: .6
+                opacity: 0.5
             });
+            const cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
 
 
 
-            const count = document.querySelector(".count")
-            count.addEventListener("input", (e) => {
-
-                scene.remove.apply(scene, scene.children)
-                let c = parseInt(e.currentTarget.value)
-
-                let x = (-45 * (c / 2)) + (5 * (c - 1))
-                // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
-
-                for (let i = 0; i < c; i++) {
-                    let y = (-45 * (c / 2)) + (5 * (c - 1))
-                    for (let z = 0; z < c; z++) {
-                        //    let r = (-45 * (c / 2)) + (5 * (c - 1))
-                        //     for (let t = 0; t < c; t++) {
-                        if (i === z) {
-                            const cube = new THREE.Mesh(geometry, material);
-                            cube.position.x = x;
-                            cube.position.y = y;
-                            scene.add(cube);
-
-                        }
-                        y += 45
-                        //cube.position.z = r;
-                        // cube.position.set(x, r, y)
-
-                        //       r += 45
-                        //    }
 
 
-                    }
-                    x += 45
 
-                }
+            camera.fov = 100;
+            camera.updateProjectionMatrix();
+
+
+            but.addEventListener("click", (e) => {
+                let x = parseInt(document.querySelector(".x").value)
+                let y = parseInt(document.querySelector(".y").value)
+                let z = parseInt(document.querySelector(".z").value)
+                camera.position.set(x, y, z)
+                console.log(camera)
 
             })
-
-
-
-
-
-
-            const fov = document.querySelector(".fov")
-            fov.addEventListener("input", (e) => {
-                camera.fov = parseInt(e.currentTarget.value);
-                camera.updateProjectionMatrix();
-            })
-
-
-
 
             // kluczowy element - animacja
 
@@ -163,14 +128,13 @@
                 //w tym miejscu ustalamy wszelkie zmiany w projekcie (obrót, skalę, położenie obiektów)
                 //np zmieniająca się wartość rotacji obiektu
 
-                //cube.rotation.y += 0.01;
+                // mesh.rotation.y += 0.01;
 
                 //wykonywanie funkcji bez końca, ok 60 fps jeśli pozwala na to wydajność maszyny
 
                 requestAnimationFrame(render);
 
                 // potwierdzenie w konsoli, że render się wykonuje
-
 
 
                 //ciągłe renderowanie / wyświetlanie widoku sceny naszą kamerą

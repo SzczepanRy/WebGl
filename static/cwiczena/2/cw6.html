@@ -6,14 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="../libs/three.js"></script>
+    <script src="../../libs/three.js"></script>
+
     <style>
         * {
             margin: 0;
-        }
-
-        input {
-            position: absolute;
         }
 
         .form {
@@ -23,6 +20,7 @@
             background-color: rgba(233, 233, 233, .4);
             display: flex;
             align-items: center;
+            flex-direction: column;
         }
 
         #root {
@@ -35,13 +33,16 @@
 </head>
 
 <body>
-
+    <div class="form">
+        <button class="but">start/stop</button>
+    </div>
     <div id="root">
 
     </div>
     <script>
+
         window.addEventListener("load", function () {
-            const input = document.querySelector("#fov")
+            //       const input = document.querySelector("#fov")
             const scene = new THREE.Scene();
 
             const axes = new THREE.AxesHelper(1000)
@@ -75,56 +76,101 @@
             document.getElementById("root").appendChild(renderer.domElement);
 
 
+            const ypos = document.querySelector(".ypos")
 
 
-            camera.position.set(100, 100, 100)
+            camera.position.set(200, 200, 200)
 
             // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
 
             camera.lookAt(scene.position);
 
 
-
-            const geometry = new THREE.BoxGeometry(40, 40, 40);
-            const material = new THREE.MeshBasicMaterial({
-                color: 0x8888ff,
-                side: THREE.DoubleSide,
-                wireframe: false,
-                transparent: true,
-                opacity: .3
-            });
-            let x = -105
-
-            for (let i = 0; i < 5; i++) {
-                let y = -105
-                for (let z = 0; z < 5; z++) {
-                    const cube = new THREE.Mesh(geometry, material);
-                    cube.position.set(x, 0, y)
-                    scene.add(cube);
-                    y += 45
-                }
-                x += 45
-
-            }
+            let materials = [];
 
 
 
+            let textureS = new THREE.TextureLoader().load('./mats/side.jpg')
+            textureS.colorSpace = THREE.SRGBColorSpace;
+            let textureT = new THREE.TextureLoader().load('./mats/top.jpg')
+            textureT.colorSpace = THREE.SRGBColorSpace;
+            let textureB = new THREE.TextureLoader().load('./mats/bottom.jpg')
+            textureB.colorSpace = THREE.SRGBColorSpace;
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureS }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureS }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureT }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureB }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureS }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureS }));
 
+            // czwarty materiał tak samo
+            // piąty materiał tak samo
+            // szósty materiał tak samo
+
+
+
+            // const cube = new THREE.Mesh(geometry, materials);
+
+
+
+            const geometry = new THREE.BoxGeometry(256, 256, 256);
+            // const material = new THREE.MeshBasicMaterial({
+
+            //     side: THREE.DoubleSide, // dwustronny
+            //     map: new THREE.TextureLoader().load('./mats/tekstura.jpg'), // plik tekstury
+            //     transparent: true, // przezroczysty / nie
+            //     opacity: 0.8, // stopień przezroczystości
+
+            // })
+
+
+
+            //const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: texture })
+
+
+
+
+
+            // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
+
+            const cube = new THREE.Mesh(geometry, materials);
+
+            // cube.position.set(x, r, y)
+            scene.add(cube);
+
+
+
+
+
+
+
+            const fov = document.querySelector(".fov")
 
             camera.fov = 100;
             camera.updateProjectionMatrix();
 
 
 
+            let moving = false; const but = document.querySelector(".but")
+            but.addEventListener("click", () => {
+                moving = !moving
+            })
+
+            let angle = 0
+
             // kluczowy element - animacja
 
             function render() {
-
+                if (moving) {
+                    angle += .1
+                    camera.position.z = Math.sin(angle) * 140
+                    camera.position.y = Math.sin(angle) * 140
+                }
 
                 //w tym miejscu ustalamy wszelkie zmiany w projekcie (obrót, skalę, położenie obiektów)
                 //np zmieniająca się wartość rotacji obiektu
 
-                // mesh.rotation.y += 0.01;
+                // cube.rotation.y += 0.01;
 
                 //wykonywanie funkcji bez końca, ok 60 fps jeśli pozwala na to wydajność maszyny
 

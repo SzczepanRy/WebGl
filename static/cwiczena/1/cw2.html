@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../libs/three.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+        }
+
+        .form {
+            position: absolute;
+            width: 200px;
+            padding: 50px;
+            background-color: rgba(233, 233, 233, .4);
+            display: flex;
+            align-items: center;
+        }
+
+        #root {
+            margin: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .a {
+            position: absolute;
+            top: 200px;
+            width: 350px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form">
+        <button class="b">1</button>
+        <button class="u">2</button>
+        <button class="t">3</button>
+        <button class="o">4</button>
+
+    </div>
+    <div class="a">
+
+    </div>
+    <div id="root">
+
+    </div>
+    <script>
+        window.addEventListener("load", function () {
+            const input = document.querySelector("#fov")
+            const scene = new THREE.Scene();
+
+            const axes = new THREE.AxesHelper(1000)
+            scene.add(axes)
+
+
+            const camera = new THREE.PerspectiveCamera(
+                45, // kąt patrzenia kamery (FOV - field of view)
+                window.innerWidth /
+                window.innerHeight, // proporcje widoku, powinny odpowiadać proporcjom ekranu przeglądarki użytkownika
+                0.1, // minimalna renderowana odległość
+                10000 // maksymalna renderowana odległość od kamery
+            );
+
+            // renderer wykorzystujący WebGL - działa stabilnie na wszystkich
+            // najnowszych przeglądarkach zarówno desktopowych jak mobilnych
+
+            const renderer = new THREE.WebGLRenderer();
+
+            // kolor tła sceny - uwaga na prefix 0x a nie #
+
+            renderer.setClearColor(0x0066ff);
+
+            // ustal rozmiary renderowanego okna w px (szer, wys)
+
+            renderer.setSize(window.innerWidth,
+                window.innerHeight);
+
+            // dodanie renderera do diva, który istnieje na scenie
+
+            document.getElementById("root").appendChild(renderer.domElement);
+
+
+
+
+            camera.position.set(100, 100, 100)
+
+            // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
+
+            camera.lookAt(scene.position);
+
+
+
+            const geometry = new THREE.BoxGeometry(100, 100, 100);
+
+            const cy = new THREE.CylinderGeometry(50, 50, 100, 20);
+            const cyl = new THREE.CylinderGeometry(0, 50, 100, 20);
+
+            const sph = new THREE.SphereGeometry(50, 20, 20);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0x8888ff,
+                side: THREE.DoubleSide,
+                wireframe: true,
+                transparent: true,
+                opacity: 1
+            });
+            const cube = new THREE.Mesh(geometry, material);
+            const cylynder = new THREE.Mesh(cy, material)
+            const cylynder2 = new THREE.Mesh(cyl, material)
+            const sphere = new THREE.Mesh(sph, material)
+
+            const b1 = document.querySelector(".b")
+            const b2 = document.querySelector(".u")
+            const b3 = document.querySelector(".t")
+            const b4 = document.querySelector(".o")
+            const a = document.querySelector(".a")
+
+            let arr = []
+            b1.addEventListener("click", () => {
+                scene.add(cube);
+                arr.push({
+                    type: cube.type,
+                    geometry: cube.geometry.type
+                })
+                a.innerHTML = JSON.stringify(arr, null, 5)
+            })
+            b2.addEventListener("click", () => {
+                scene.add(cylynder);
+                arr.push({
+                    type: cylynder.type,
+                    geometry: cylynder.geometry.type
+                })
+                a.innerHTML = JSON.stringify(arr, null, 5)
+
+
+            })
+            b3.addEventListener("click", () => {
+                scene.add(cylynder2);
+                arr.push({
+                    type: cylynder2.type,
+                    geometry: cylynder2.geometry.type
+                })
+                a.innerHTML = JSON.stringify(arr, null, 5)
+
+
+            })
+            b4.addEventListener("click", () => {
+                scene.add(sphere);
+                arr.push({
+                    type: sphere.type,
+                    geometry: sphere.geometry.type
+                })
+                a.innerHTML = JSON.stringify(arr, null, 5)
+
+
+            })
+
+
+
+            camera.fov = 100;
+            camera.updateProjectionMatrix();
+
+
+
+
+            // kluczowy element - animacja
+            let i = 0
+
+            function render() {
+                //   if (i % 20 == 0) {
+                //     console.log(cube)
+                // }
+                // i++
+
+                //w tym miejscu ustalamy wszelkie zmiany w projekcie (obrót, skalę, położenie obiektów)
+                //np zmieniająca się wartość rotacji obiektu
+
+                // mesh.rotation.y += 0.01;
+                cube.rotation.y += 0.01
+                cylynder.rotation.y += 0.01
+                cylynder2.rotation.y += 0.01
+                sphere.rotation.y += 0.01
+
+                //wykonywanie funkcji bez końca, ok 60 fps jeśli pozwala na to wydajność maszyny
+
+                requestAnimationFrame(render);
+
+                // potwierdzenie w konsoli, że render się wykonuje
+
+                //console.log("render leci")
+
+                //ciągłe renderowanie / wyświetlanie widoku sceny naszą kamerą
+
+
+                renderer.render(scene, camera);
+            }
+
+            // na koniec jednokrotne wykonanie powyższej funkcji
+
+            render();
+        })
+    </script>
+</body>
+
+</html>

@@ -6,10 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="../libs/three.js"></script>
+    <script src="../../libs/three.js"></script>
+
     <style>
         * {
             margin: 0;
+        }
+
+        input {
+            position: absolute;
         }
 
         .form {
@@ -27,26 +32,11 @@
             height: 100vh;
             overflow: hidden;
         }
-
-        .a {
-            position: absolute;
-            top: 200px;
-            width: 350px;
-        }
     </style>
 </head>
 
 <body>
-    <div class="form">
-        <button class="b">1</button>
-        <button class="u">2</button>
-        <button class="t">3</button>
-        <button class="o">4</button>
 
-    </div>
-    <div class="a">
-
-    </div>
     <div id="root">
 
     </div>
@@ -96,69 +86,29 @@
 
 
 
-            const geometry = new THREE.BoxGeometry(100, 100, 100);
-
-            const cy = new THREE.CylinderGeometry(50, 50, 100, 20);
-            const cyl = new THREE.CylinderGeometry(0, 50, 100, 20);
-
-            const sph = new THREE.SphereGeometry(50, 20, 20);
+            const geometry = new THREE.BoxGeometry(40, 40, 40);
             const material = new THREE.MeshBasicMaterial({
                 color: 0x8888ff,
                 side: THREE.DoubleSide,
-                wireframe: true,
+                wireframe: false,
                 transparent: true,
-                opacity: 1
+                opacity: .3
             });
-            const cube = new THREE.Mesh(geometry, material);
-            const cylynder = new THREE.Mesh(cy, material)
-            const cylynder2 = new THREE.Mesh(cyl, material)
-            const sphere = new THREE.Mesh(sph, material)
+            let x = -105
 
-            const b1 = document.querySelector(".b")
-            const b2 = document.querySelector(".u")
-            const b3 = document.querySelector(".t")
-            const b4 = document.querySelector(".o")
-            const a = document.querySelector(".a")
+            for (let i = 0; i < 5; i++) {
+                let y = -105
+                for (let z = 0; z < 5; z++) {
+                    const cube = new THREE.Mesh(geometry, material);
+                    cube.position.set(x, 0, y)
+                    scene.add(cube);
+                    y += 45
+                }
+                x += 45
 
-            let arr = []
-            b1.addEventListener("click", () => {
-                scene.add(cube);
-                arr.push({
-                    type: cube.type,
-                    geometry: cube.geometry.type
-                })
-                a.innerHTML = JSON.stringify(arr, null, 5)
-            })
-            b2.addEventListener("click", () => {
-                scene.add(cylynder);
-                arr.push({
-                    type: cylynder.type,
-                    geometry: cylynder.geometry.type
-                })
-                a.innerHTML = JSON.stringify(arr, null, 5)
+            }
 
 
-            })
-            b3.addEventListener("click", () => {
-                scene.add(cylynder2);
-                arr.push({
-                    type: cylynder2.type,
-                    geometry: cylynder2.geometry.type
-                })
-                a.innerHTML = JSON.stringify(arr, null, 5)
-
-
-            })
-            b4.addEventListener("click", () => {
-                scene.add(sphere);
-                arr.push({
-                    type: sphere.type,
-                    geometry: sphere.geometry.type
-                })
-                a.innerHTML = JSON.stringify(arr, null, 5)
-
-
-            })
 
 
 
@@ -167,24 +117,15 @@
 
 
 
-
             // kluczowy element - animacja
-            let i = 0
 
             function render() {
-                //   if (i % 20 == 0) {
-                //     console.log(cube)
-                // }
-                // i++
+
 
                 //w tym miejscu ustalamy wszelkie zmiany w projekcie (obrót, skalę, położenie obiektów)
                 //np zmieniająca się wartość rotacji obiektu
 
                 // mesh.rotation.y += 0.01;
-                cube.rotation.y += 0.01
-                cylynder.rotation.y += 0.01
-                cylynder2.rotation.y += 0.01
-                sphere.rotation.y += 0.01
 
                 //wykonywanie funkcji bez końca, ok 60 fps jeśli pozwala na to wydajność maszyny
 
@@ -192,7 +133,7 @@
 
                 // potwierdzenie w konsoli, że render się wykonuje
 
-                //console.log("render leci")
+
 
                 //ciągłe renderowanie / wyświetlanie widoku sceny naszą kamerą
 
