@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../libs/three.js"></script>
+    <script src="./classes/Test.js"></script>
+    <script src="./classes/Player.js"></script>
+    <style>
+        * {
+            margin: 0;
+        }
+
+        .form {
+            position: absolute;
+            width: 200px;
+            padding: 50px;
+            background-color: rgba(233, 233, 233, .4);
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #root {
+            margin: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root">
+
+    </div>
+    <script>
+        window.addEventListener("load", function () {
+            //       const input = document.querySelector("#fov")
+            const scene = new THREE.Scene();
+
+            const axes = new THREE.AxesHelper(1000)
+            scene.add(axes)
+
+
+            const camera = new THREE.PerspectiveCamera(
+                45, // kąt patrzenia kamery (FOV - field of view)
+                window.innerWidth /
+                window.innerHeight, // proporcje widoku, powinny odpowiadać proporcjom ekranu przeglądarki użytkownika
+                0.1, // minimalna renderowana odległość
+                10000 // maksymalna renderowana odległość od kamery
+            );
+
+            // renderer wykorzystujący WebGL - działa stabilnie na wszystkich
+            // najnowszych przeglądarkach zarówno desktopowych jak mobilnych
+
+            const renderer = new THREE.WebGLRenderer();
+
+            // kolor tła sceny - uwaga na prefix 0x a nie #
+
+            renderer.setClearColor(0x0066ff);
+
+            // ustal rozmiary renderowanego okna w px (szer, wys)
+
+            renderer.setSize(window.innerWidth,
+                window.innerHeight);
+
+            // dodanie renderera do diva, który istnieje na scenie
+
+            document.getElementById("root").appendChild(renderer.domElement);
+
+
+            const ypos = document.querySelector(".ypos")
+
+
+            camera.position.set(200, 200, 200)
+
+            // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
+
+            camera.lookAt(scene.position);
+
+            const player = new Player()
+
+            scene.add(player.getPlayerCont())
+
+
+
+
+
+            const fov = document.querySelector(".fov")
+
+            camera.fov = 100;
+            camera.updateProjectionMatrix();
+
+
+            const raycaster = new THREE.Raycaster(); // obiekt Raycastera symulujący "rzucanie" promieni
+
+
+            let clickedVect = new THREE.Vector3(0, 0, 0);
+            let directionVect = new THREE.Vector3(0, 0, 0);
+
+            function render() {
+
+                window.addEventListener("mousedown", (e) => {
+
+
+                    clickedVect.x = (e.clientX / window.innerWidth) * 2 - 1;
+                    clickedVect.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+
+                    raycaster.setFromCamera(clickedVect, camera);
+                    const intersects = raycaster.intersectObjects(scene.children);
+
+
+
+                    if (intersects.length > 0) {
+
+                        clickedVect = intersects[0].point
+                        console.log(clickedVect)
+
+                        directionVect = clickedVect.clone().sub(player.getPlayerCont().position).normalize() // sub - > odejmij pozycję playera od pozycji kliknięcia
+                        console.log(directionVect)
+                        player.getPlayerCont().position.clone().distanceTo(clickedVect)
+                        player.getPlayerCont().translateOnAxis(directionVect, 5)
+                        //użyta wyżej funkcja normalize() przelicza proporcjonalnie współrzędne x,y,z wektora na zakres 0-1
+                        //jest to wymagane przez kolejne funkcje   
+                    }
+
+                })
+
+                //użyta wyżej funkcja normalize() przelicza proporcjonalnie współrzędne x,y,z wektora na zakres 0-1
+                //jest to wymagan
+                requestAnimationFrame(render);
+
+
+
+                renderer.render(scene, camera);
+            }
+
+
+
+            render();
+        })
+    </script>
+</body>
+
+</html>

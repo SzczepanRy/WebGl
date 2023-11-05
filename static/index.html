@@ -28,7 +28,11 @@
                     "content-type": "application/json"
                 }
             })
-            let { i, y } = await res.json()
+            let {
+                i,
+                y,
+                x
+            } = await res.json()
             console.log(i, y)
 
             for (let y = 1; y <= Number(i); y++) {
@@ -45,6 +49,14 @@
                 let a = document.createElement("a")
                 a.innerText = `cw2.${z}`
                 a.href = `http://localhost:3000/cw2/cw${z}`
+                child.appendChild(a)
+                ul.appendChild(child)
+            }
+            for (let c = 1; c <= Number(x); c++) {
+                let child = document.createElement("li")
+                let a = document.createElement("a")
+                a.innerText = `cw3.${c}`
+                a.href = `http://localhost:3000/cw3/cw${c}`
                 child.appendChild(a)
                 ul.appendChild(child)
             }
