@@ -82,7 +82,21 @@
 
             camera.lookAt(scene.position);
 
+            const sc = new THREE.PlaneGeometry(1200, 1200);
+
+            const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
+            const plane = new THREE.Mesh(sc, material);
+            plane.rotation.x = Math.PI / 2
+            scene.add(plane);
+
+
+
+
+
             const player = new Player()
+            let cube = player.getPlayerMesh()
+            cube.position.set(0, 50, 0)
+            scene.add(cube)
 
             scene.add(player.getPlayerCont())
 
@@ -97,39 +111,48 @@
 
 
             const raycaster = new THREE.Raycaster(); // obiekt Raycastera symulujący "rzucanie" promieni
-
+            const mouseVect = new THREE.Vector2()
 
             let clickedVect = new THREE.Vector3(0, 0, 0);
             let directionVect = new THREE.Vector3(0, 0, 0);
 
+
+            window.addEventListener("mousedown", (e) => {
+
+
+                clickedVect.x = (e.clientX / window.innerWidth) * 2 - 1;
+                clickedVect.z = -(e.clientY / window.innerHeight) * 2 + 1;
+
+
+                raycaster.setFromCamera(clickedVect, camera);
+
+                const intersects = raycaster.intersectObjects(scene.children);
+
+
+
+                if (intersects.length > 0) {
+
+                    clickedVect = intersects[0].point
+                    console.log(clickedVect)
+
+                    directionVect = clickedVect.clone().sub(player.getPlayerCont().position).normalize() // sub - > odejmij pozycję playera od pozycji kliknięcia
+                    console.log(directionVect)
+                    let value = player.getPlayerCont().position.clone().distanceTo(clickedVect)
+                    console.log(value);
+                    //użyta wyżej funkcja normalize() przelicza proporcjonalnie współrzędne x,y,z wektora na zakres 0-1
+                    //jest to wymagane przez kolejne funkcje   
+                }
+
+            })
             function render() {
 
-                window.addEventListener("mousedown", (e) => {
+
+                /// console.log(directionVect);
 
 
-                    clickedVect.x = (e.clientX / window.innerWidth) * 2 - 1;
-                    clickedVect.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                player.getPlayerCont().translateOnAxis(directionVect, 5)
 
 
-                    raycaster.setFromCamera(clickedVect, camera);
-                    const intersects = raycaster.intersectObjects(scene.children);
-
-
-
-                    if (intersects.length > 0) {
-
-                        clickedVect = intersects[0].point
-                        console.log(clickedVect)
-
-                        directionVect = clickedVect.clone().sub(player.getPlayerCont().position).normalize() // sub - > odejmij pozycję playera od pozycji kliknięcia
-                        console.log(directionVect)
-                        player.getPlayerCont().position.clone().distanceTo(clickedVect)
-                        player.getPlayerCont().translateOnAxis(directionVect, 5)
-                        //użyta wyżej funkcja normalize() przelicza proporcjonalnie współrzędne x,y,z wektora na zakres 0-1
-                        //jest to wymagane przez kolejne funkcje   
-                    }
-
-                })
 
                 //użyta wyżej funkcja normalize() przelicza proporcjonalnie współrzędne x,y,z wektora na zakres 0-1
                 //jest to wymagan

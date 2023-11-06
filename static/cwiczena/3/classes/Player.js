@@ -3,7 +3,6 @@ class Player {
 		this.geometry = new THREE.BoxGeometry(100, 100, 100);
 		this.material = new THREE.MeshBasicMaterial({
 			color: 0x8888ff,
-
 			wireframe: true,
 			transparent: true,
 			opacity: 0.5,

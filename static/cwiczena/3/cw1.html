@@ -34,6 +34,10 @@
 </head>
 
 <body>
+    <div class="form">
+        <input type="range" class="sliderx">
+        <input type="range" class="slidery">
+    </div>
     <div id="root">
 
     </div>
@@ -73,7 +77,7 @@
             document.getElementById("root").appendChild(renderer.domElement);
 
 
-            const ypos = document.querySelector(".ypos")
+
 
 
             camera.position.set(200, 200, 200)
@@ -82,12 +86,35 @@
 
             camera.lookAt(scene.position);
 
-            const player = new Player()
 
-            scene.add(player.getPlayerCont())
+            const geometry = new THREE.BoxGeometry(100, 100, 100);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0x8888ff,
+
+                wireframe: true,
+                transparent: true,
+                opacity: 0.5,
+            });
+
+
+            const obj = new THREE.Object3D()
+
+            for (let i = 0; i < 3; i++) {
+
+                const cube = new THREE.Mesh(geometry, material);
+                if (i == 0) {
+                    cube.position.set(0, 25, 0)
+                } else if (i == 1) {
+                    cube.position.set(120, 25, 0)
+                } else if (i == 2) {
+                    cube.position.set(0, 25, 120)
+                }
+                obj.add(cube);
+            }
 
 
 
+            scene.add(obj);
 
 
             const fov = document.querySelector(".fov")
@@ -95,12 +122,19 @@
             camera.fov = 100;
             camera.updateProjectionMatrix();
 
-
+            const slidery = document.querySelector(".slidery")
+            const sliderx = document.querySelector(".sliderx")
 
 
             function render() {
 
+                sliderx.addEventListener("input", (e) => {
+                    obj.children[0].position.x = Number(e.currentTarget.value)
 
+                })
+                slidery.addEventListener("input", (e) => {
+                    obj.position.y = Number(e.currentTarget.value)
+                })
 
 
                 requestAnimationFrame(render);
